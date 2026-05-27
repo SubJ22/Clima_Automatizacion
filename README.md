@@ -1,123 +1,182 @@
-# Informe automático de clima · Automatización de Procesos
+﻿# 🌤️ Clima Automatización
 
-Proyecto de la asignatura **Automatización de Procesos** (Universidad Nebrija).
+> Proyecto de **Automatización de Procesos** — Universidad Nebrija
+> Curso 2025–2026
 
-Automatiza un proceso manual de consulta meteorológica que un analista de campo
-realiza cada mañana para planificar el riego en distintas zonas. Lo que antes
-tardaba ~20 minutos al día (abrir varias webs del tiempo, anotar valores,
-copiarlos a Excel, decidir prioridades, mandar email al equipo) se ejecuta ahora
-en segundos pulsando un botón.
+Automatiza el proceso manual de consulta meteorológica que un analista agrícola realiza cada mañana para planificar el riego en distintas zonas de cultivo. Lo que antes tardaba **~20 minutos al día** (abrir varias webs del tiempo, anotar datos, volcarlos a Excel, decidir prioridades, enviar email) ahora se ejecuta en **menos de 15 segundos** pulsando un botón.
 
 ---
 
-## Stack (librerías del temario)
+## 📊 Impacto
 
-| Fase | Recurso | Librería usada |
-|------|---------|----------------|
-| Obtención de datos | API REST (Open-Meteo) | `requests` |
-| Consolidación en Excel | Excel + hojas | `pandas` + `openpyxl` |
-| Renombrar + mover | Sistema de ficheros | `pathlib` + `shutil` |
-| Envío de informe | Email SMTP | `smtplib` + `email` |
-| Frontend / orquestación | Aplicación web | `FastAPI` + HTML/CSS/JS |
+| Métrica              | Manual         | Automatizado    |
+|----------------------|----------------|-----------------|
+| Tiempo por ejecución | ~20 min        | < 15 seg        |
+| Tasa de error        | 5–10%          | 0%              |
+| Ciudades cubiertas   | 3–4 (límite humano) | 8 (escalable) |
+| Reproducibilidad     | Baja           | Total           |
+| Trazabilidad         | Ninguna        | Archivo por fecha |
 
 ---
 
-## Instalación
+## 🏗️ Stack (librerías del temario)
 
-Requisitos: **Python 3.10+**
+| Fase del proceso         | Recurso              | Librería              |
+|--------------------------|----------------------|-----------------------|
+| Obtención de datos       | API REST (Open-Meteo)| `requests`            |
+| Consolidación en Excel   | DataFrame + hojas    | `pandas` + `openpyxl` |
+| Renombrar y mover        | Sistema de ficheros  | `pathlib` + `shutil`  |
+| Envío de informe         | Email SMTP           | `smtplib` + `email`   |
+| Frontend / orquestación  | Aplicación web       | `FastAPI` + `uvicorn` |
+
+---
+
+## 🚀 Instalación y ejecución
+
+### Requisitos previos
+
+- **Python 3.10 o superior** ([descargar](https://www.python.org/downloads/))
+- Conexión a internet (la API de Open-Meteo es pública y gratuita, sin API key)
+
+### Pasos
 
 ```bash
-# 1. Clonar / descomprimir el proyecto
-cd proyecto
+# 1. Clonar el repositorio
+git clone https://github.com/SubJ22/Clima_Automatizacion.git
+cd Clima_Automatizacion
 
-# 2. (Opcional) crear entorno virtual
+# 2. (Opcional pero recomendado) crear entorno virtual
 python -m venv venv
-# Windows:
-venv\Scripts\activate
-# Linux / Mac:
+
+# Activar el entorno virtual
+# Windows (PowerShell):
+venv\Scripts\Activate.ps1
+# Windows (CMD):
+venv\Scripts\activate.bat
+# Linux / macOS:
 source venv/bin/activate
 
 # 3. Instalar dependencias
 pip install -r requirements.txt
-```
 
----
-
-## Ejecución
-
-```bash
+# 4. Lanzar la aplicación
 python app.py
 ```
 
-Abrir el navegador en **http://127.0.0.1:8000**.
+Abre el navegador en **http://127.0.0.1:8000** y listo.
 
-### Uso
+---
 
-1. Selecciona las ciudades a consultar (Madrid, Barcelona, Palencia, etc.).
-2. Ajusta el horizonte de previsión (1–16 días).
-3. (Opcional) introduce los datos SMTP para recibir el Excel por email.
-   - Si usas Gmail: necesitas una **App Password**
-     (ajustes de Google → Seguridad → Contraseñas de aplicaciones).
+## 🖱️ Uso
+
+1. **Selecciona las ciudades** a consultar con los checkboxes (Madrid, Barcelona, Valencia, Sevilla, Bilbao, Zaragoza, Málaga, Palencia).
+2. **Ajusta el horizonte de previsión** (entre 1 y 16 días).
+3. **(Opcional) configura SMTP** si quieres recibir el Excel por email:
+   - Servidor SMTP (p.ej. `smtp.gmail.com`)
+   - Puerto (`587` para TLS)
+   - Usuario (tu email)
+   - Contraseña — **si usas Gmail, necesitas una App Password**, no tu contraseña normal: [cómo generarla](https://support.google.com/accounts/answer/185833)
+   - Destinatario
 4. Pulsa **Lanzar informe**.
 
-El sistema:
-- Consulta Open-Meteo para cada ciudad
-- Aplica la regla de negocio de prioridad de riego
-- Genera un Excel con dos hojas (`Datos_API` y `Resumen`)
-- Mueve los ficheros a `archivo_informes/YYYY-MM-DD/`
-- Envía el email con el Excel adjunto (si hay SMTP)
-- Muestra el resultado en pantalla con enlace de descarga directa
+### Qué hace el sistema en ese clic
+
+1. Consulta la API de Open-Meteo para cada ciudad seleccionada (con reintentos automáticos en caso de fallo puntual)
+2. Aplica la regla de negocio de prioridad de riego
+3. Consolida los datos en un Excel con dos hojas: `Datos_API` y `Resumen`
+4. Renombra los ficheros con un `run_id` único y los archiva en `archivo_informes/YYYY-MM-DD/`
+5. Envía el email con el Excel adjunto (si configuraste SMTP)
+6. Muestra el resultado en pantalla con descarga directa del Excel
 
 ### Modo CLI (sin frontend)
 
+Si prefieres ejecutarlo desde la terminal sin abrir el navegador:
+
 ```bash
-# Con variables de entorno opcionales para email
+# (Opcional) variables de entorno para el email
+# Windows PowerShell:
+$env:SMTP_HOST="smtp.gmail.com"
+$env:SMTP_USER="tu_email@gmail.com"
+$env:SMTP_PASS="tu_app_password"
+$env:EMAIL_TO="destino@empresa.com"
+
+# Linux / macOS:
 export SMTP_HOST=smtp.gmail.com
 export SMTP_USER=tu_email@gmail.com
-export SMTP_PASS=app_password
+export SMTP_PASS=tu_app_password
 export EMAIL_TO=destino@empresa.com
+
 python weather_job.py
 ```
 
 ---
 
-## Estructura del proyecto
-
-```
-proyecto/
-├── app.py                  # FastAPI: API + servidor de estáticos
-├── weather_job.py          # Lógica del proceso de automatización
-├── requirements.txt
-├── README.md
+## 📁 Estructura del proyecto
+Clima_Automatizacion/
+├── app.py                    # FastAPI: API + servidor de estáticos
+├── weather_job.py            # Lógica del proceso de automatización
+├── requirements.txt          # Dependencias Python
+├── presentacion.pptx         # Presentación del proyecto
+├── README.md                 # Este fichero
+├── .gitignore
 ├── static/
-│   ├── index.html          # Formulario
-│   ├── style.css           # Tema naranja/azul
-│   └── script.js           # Lógica del cliente
-├── datos_raw/              # JSONs crudos (se crea automáticamente)
-├── informes_generados/     # Excel antes de archivar
-└── archivo_informes/       # Archivo final por fecha
-    └── 2026-05-27/
-        ├── 20260527_103045_raw_madrid_*.json
-        └── 20260527_103045_informe_clima_riego_*.xlsx
-```
+│   ├── index.html            # Formulario web
+│   ├── style.css             # Tema naranja/azul (cielo & sol)
+│   └── script.js             # Lógica del cliente
+├── datos_raw/                # JSONs crudos (auto-generado, no se commitea)
+├── informes_generados/       # Excel pre-archivo (auto-generado)
+└── archivo_informes/         # Archivo final por fecha (auto-generado)
+└── 2026-05-27/
+├── 20260527_103045_raw_madrid.json
+└── 20260527_103045_informe_clima_riego.xlsx
 
 ---
 
-## Lógica de negocio
+## 🧠 Lógica de negocio
 
-| Condición | Prioridad | Recomendación |
-|-----------|-----------|---------------|
-| Temp máx ≥ 30°C y lluvia < 2mm | **Alta** | Revisar aumento de riego |
-| Lluvia ≥ 5mm | **Media** | Reducir riego / revisar drenaje |
-| Resto | **Baja** | Mantener estrategia actual |
+La regla que decide la prioridad de riego para cada día y ciudad:
+
+| Condición                              | Prioridad | Recomendación                          |
+|----------------------------------------|-----------|----------------------------------------|
+| Temp máx ≥ 30°C **y** lluvia < 2 mm    | **Alta**  | Revisar aumento de riego               |
+| Lluvia ≥ 5 mm                          | **Media** | Reducir riego / revisar drenaje        |
+| Resto de casos                         | **Baja**  | Mantener estrategia actual             |
+
+La función `classify_day(temp_max, rain)` en `weather_job.py` es una **función pura** sin efectos secundarios — fácil de testear sin red, sin Excel y sin SMTP.
 
 ---
 
-## Medición de impacto
+## 🛡️ Robustez
 
-| Métrica | Manual | Automatizado |
-|---------|--------|--------------|
-| Tiempo por ejecución | ~20 min | < 15 seg |
-| Tasa de error | 5–10% (transcripción) | 0% |
-| Ciudades cubiertas | 3–4 (límite de tiempo) | 8 (escalable) |
-| Reproducibilidad | Baja | Total |
+- **Reintentos automáticos** (3 con backoff exponencial) en cada llamada a la API
+- **Tolerancia a fallos por ciudad**: si una ciudad falla, el resto continúa y el fallo se reporta en la respuesta
+- **Email desacoplado**: si SMTP falla o no está configurado, el Excel sigue disponible para descarga
+- **Logging con timestamps** en cada paso del proceso
+
+---
+
+## 🌐 API endpoints
+
+| Método | Endpoint              | Descripción                                  |
+|--------|-----------------------|----------------------------------------------|
+| GET    | `/`                   | Frontend (formulario)                        |
+| GET    | `/cities`             | Lista de ciudades disponibles (JSON)         |
+| POST   | `/run`                | Lanza el job de automatización               |
+| GET    | `/download/{fichero}` | Descarga directa del Excel generado          |
+
+---
+
+## 👥 Autores
+
+- **Bruno** ([@hibrusi-dev](https://github.com/hibrusi-dev))
+- **SubJ22** ([@SubJ22](https://github.com/SubJ22))
+
+Asignatura: **Automatización de Procesos**
+Profesor: Francisco
+Universidad Nebrija — Curso 2025/2026
+
+---
+
+## 📜 Licencia
+
+Proyecto académico. Uso libre para fines educativos.
