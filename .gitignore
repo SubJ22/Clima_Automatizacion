@@ -1,0 +1,22 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.venv/
+env/
+
+# Entornos / secretos
+.env
+*.env
+
+# Generados en runtime
+datos_raw/
+informes_generados/
+archivo_informes/
+
+# IDE / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

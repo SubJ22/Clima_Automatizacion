@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Informe Clima · Automatización</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Geist:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="bg-grain"></div>
+
+  <main class="container">
+    <header class="hero">
+      <div class="badge">
+        <span class="dot"></span>
+        <span>Automatización · Python · API</span>
+      </div>
+      <h1>Informe automático de <span class="accent">clima &amp; riego</span></h1>
+      <p class="subtitle">
+        Consulta Open-Meteo en varias ciudades, consolida los datos en Excel,
+        archiva ficheros por fecha y envía el informe por email.
+        <strong>Una sola pulsación.</strong>
+      </p>
+    </header>
+
+    <form id="run-form" class="card">
+      <!-- Paso 1: Ciudades -->
+      <section class="step">
+        <div class="step-head">
+          <span class="step-num">01</span>
+          <div>
+            <h2>Selecciona las ciudades</h2>
+            <p>Las que quieras incluir en el informe.</p>
+          </div>
+        </div>
+        <div id="cities-grid" class="cities-grid">
+          <!-- inyectado por JS -->
+        </div>
+      </section>
+
+      <!-- Paso 2: Días de previsión -->
+      <section class="step">
+        <div class="step-head">
+          <span class="step-num">02</span>
+          <div>
+            <h2>Horizonte de previsión</h2>
+            <p>Cuántos días hacia adelante consultar (1–16).</p>
+          </div>
+        </div>
+        <div class="range-row">
+          <input type="range" id="forecast-days" min="1" max="16" value="7" />
+          <output id="forecast-output">7 días</output>
+        </div>
+      </section>
+
+      <!-- Paso 3: Email -->
+      <section class="step">
+        <div class="step-head">
+          <span class="step-num">03</span>
+          <div>
+            <h2>Envío por email</h2>
+            <p>Configura SMTP para recibir el Excel adjunto.</p>
+          </div>
+        </div>
+        <div class="grid-2">
+          <label class="field">
+            <span>Servidor SMTP</span>
+            <input type="text" id="smtp_host" placeholder="smtp.gmail.com" value="smtp.gmail.com" />
+          </label>
+          <label class="field">
+            <span>Puerto</span>
+            <input type="number" id="smtp_port" value="587" />
+          </label>
+          <label class="field">
+            <span>Usuario (email remitente)</span>
+            <input type="email" id="smtp_user" placeholder="tu_email@gmail.com" />
+          </label>
+          <label class="field">
+            <span>Contraseña / App password</span>
+            <input type="password" id="smtp_pass" placeholder="••••••••••••" />
+          </label>
+          <label class="field field-wide">
+            <span>Destinatario</span>
+            <input type="email" id="email_to" placeholder="destinatario@empresa.com" />
+          </label>
+        </div>
+        <p class="hint">
+          Si dejas estos campos vacíos, el informe se generará igual y podrás descargarlo desde el resultado.
+        </p>
+      </section>
+
+      <!-- Botón lanzar -->
+      <div class="launch-row">
+        <button type="submit" id="launch-btn" class="launch-btn">
+          <span class="btn-label">Lanzar informe</span>
+          <span class="btn-arrow">→</span>
+        </button>
+      </div>
+    </form>
+
+    <!-- Resultado -->
+    <section id="result" class="result hidden">
+      <h3>Resultado de la ejecución</h3>
+      <div id="result-body"></div>
+    </section>
+
+    <footer class="footer">
+      <span>Hibrusi · Proyecto Automatización · Nebrija</span>
+    </footer>
+  </main>
+
+  <!-- Overlay de carga -->
+  <div id="overlay" class="overlay hidden">
+    <div class="overlay-inner">
+      <div class="sun">
+        <div class="sun-core"></div>
+        <div class="ray r1"></div>
+        <div class="ray r2"></div>
+        <div class="ray r3"></div>
+        <div class="ray r4"></div>
+      </div>
+      <p class="overlay-text">Consultando Open-Meteo…</p>
+    </div>
+  </div>
+
+  <script src="/script.js"></script>
+</body>
+</html>
