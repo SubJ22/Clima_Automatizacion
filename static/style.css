@@ -348,61 +348,247 @@ h1 .accent {
   font-size: 13px;
 }
 
-/* ------- Overlay ------- */
+/* ------- Overlay: mapa de España con cámara ------- */
 .overlay {
   position: fixed; inset: 0;
-  background: rgba(13, 26, 54, 0.55);
-  backdrop-filter: blur(6px);
+  background: rgba(13, 26, 54, 0.62);
+  backdrop-filter: blur(8px);
   display: grid; place-items: center;
   z-index: 100;
+  animation: overlay-in 0.3s ease;
 }
 .overlay.hidden { display: none; }
-.overlay-inner { text-align: center; }
-.overlay-text {
+@keyframes overlay-in { from { opacity: 0; } to { opacity: 1; } }
+
+.map-card {
+  width: min(94vw, 940px);
+  background: var(--blue-900);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  padding: 22px;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+  animation: card-in 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.96); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* Barra superior */
+.map-topbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 0 4px;
+}
+.map-title {
+  display: flex; align-items: center; gap: 10px;
   color: #fff;
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: 21px;
+}
+.map-counter {
+  display: flex; align-items: baseline; gap: 6px;
   font-family: 'Fraunces', serif;
-  font-style: italic;
-  font-size: 22px;
-  margin-top: 28px;
+  color: var(--orange-400);
+  font-size: 16px;
 }
-
-.sun {
-  position: relative;
-  width: 80px; height: 80px;
-  margin: 0 auto;
+.map-counter #map-count {
+  font-size: 26px; font-weight: 700; color: #fff;
+  font-variant-numeric: tabular-nums;
 }
-.sun-core {
-  position: absolute; inset: 22px;
+.map-counter .sep { opacity: 0.5; }
+.map-dot {
+  width: 9px; height: 9px; border-radius: 50%;
   background: var(--orange-500);
-  border-radius: 50%;
-  box-shadow: 0 0 30px rgba(255, 122, 24, 0.7);
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: dot-pulse 1.4s ease-out infinite;
 }
-.ray {
-  position: absolute; left: 50%; top: 50%;
-  width: 4px; height: 14px;
-  background: var(--orange-400);
-  border-radius: 2px;
-  transform-origin: center 26px;
-  animation: spin 3s linear infinite;
+@keyframes dot-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(255, 122, 24, 0.55); }
+  100% { box-shadow: 0 0 0 12px rgba(255, 122, 24, 0); }
 }
-.r1 { transform: translate(-50%, -50%) rotate(0deg); }
-.r2 { transform: translate(-50%, -50%) rotate(90deg); }
-.r3 { transform: translate(-50%, -50%) rotate(180deg); }
-.r4 { transform: translate(-50%, -50%) rotate(270deg); }
 
-@keyframes pulse {
-  0%,100% { transform: scale(1); opacity: 1; }
-  50%     { transform: scale(1.15); opacity: 0.85; }
+/* Layout: mapa + checklist */
+.map-layout {
+  display: grid;
+  grid-template-columns: 1fr 250px;
+  gap: 18px;
+  align-items: stretch;
 }
-@keyframes spin {
-  from { transform: translate(-50%, -50%) rotate(0deg); }
-  to   { transform: translate(-50%, -50%) rotate(360deg); }
+
+.map-stage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 13.1 / 8.6;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: radial-gradient(ellipse 120% 90% at 50% -10%, #16305c 0%, #0a1730 70%);
 }
-.sun { animation: spin-slow 8s linear infinite; }
-@keyframes spin-slow {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+#map-svg { width: 100%; height: 100%; display: block; }
+
+/* Checklist de ciudades */
+.city-track {
+  list-style: none;
+  display: flex; flex-direction: column; gap: 8px;
+  overflow-y: auto;
+  max-height: 100%;
+  padding-right: 2px;
+}
+.track-item {
+  display: flex; align-items: center; gap: 11px;
+  padding: 11px 13px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 14px; font-weight: 500;
+  transition: all 0.3s ease;
+}
+.track-item .ti-icon {
+  width: 20px; height: 20px; flex: 0 0 20px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  display: grid; place-items: center;
+  position: relative;
+  transition: all 0.3s ease;
+}
+.track-item .ti-icon svg { width: 12px; height: 12px; opacity: 0; transition: opacity 0.25s; }
+.track-item .ti-name { transition: color 0.3s; }
+.track-item .ti-sub {
+  margin-left: auto;
+  font-size: 11px; font-weight: 500;
+  color: rgba(255, 255, 255, 0.4);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+
+.track-item.active {
+  background: rgba(255, 122, 24, 0.14);
+  border-color: var(--orange-500);
+  color: #fff;
+}
+.track-item.active .ti-icon {
+  border-color: var(--orange-500);
+}
+.track-item.active .ti-icon::after {
+  content: ''; position: absolute; inset: 2px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  border-top-color: var(--orange-400);
+  animation: ti-spin 0.7s linear infinite;
+}
+.track-item.active .ti-sub { color: var(--orange-300, #ffb877); }
+@keyframes ti-spin { to { transform: rotate(360deg); } }
+
+.track-item.done {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.track-item.done .ti-icon {
+  background: var(--orange-500);
+  border-color: var(--orange-500);
+}
+.track-item.done .ti-icon::after { display: none; }
+.track-item.done .ti-icon svg { opacity: 1; }
+.track-item.done .ti-sub { color: #6ee7a8; }
+
+/* Pie de estado */
+.map-foot {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: 16px; padding: 0 4px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: 'Fraunces', serif; font-style: italic;
+  font-size: 17px;
+}
+.map-spinner {
+  width: 15px; height: 15px; flex: 0 0 15px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: var(--orange-500);
+  animation: ti-spin 0.7s linear infinite;
+}
+
+#spain-path {
+  fill: url(#landGrad);
+  stroke: #fff7ec;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.45));
+}
+
+.city-marker .halo { fill: rgba(255, 122, 24, 0.22); opacity: 0; transition: opacity 0.3s; }
+.city-marker .ring {
+  fill: none;
+  stroke: var(--orange-500);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.city-marker .core {
+  fill: #fff;
+  stroke: var(--orange-600);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  transition: fill 0.3s;
+}
+.city-marker .city-name {
+  fill: #fff;
+  font-family: 'Geist', sans-serif;
+  font-weight: 600;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(10, 23, 48, 0.9);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.city-marker.active .halo { opacity: 1; }
+.city-marker.active .city-name { opacity: 1; }
+.city-marker.active .ring { opacity: 1; animation: ring-pulse 1.3s ease-out infinite; }
+.city-marker.done .core { fill: var(--orange-500); }
+@keyframes ring-pulse {
+  0%   { transform: scale(0.5); opacity: 0.9; }
+  100% { transform: scale(2.6); opacity: 0; }
+}
+
+.map-bar {
+  margin-top: 14px;
+  height: 4px; border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+}
+.map-bar span {
+  display: block; height: 100%; width: 38%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orange-400), var(--orange-600));
+  animation: bar-slide 1.3s ease-in-out infinite;
+}
+@keyframes bar-slide {
+  0%   { transform: translateX(-120%); }
+  100% { transform: translateX(330%); }
+}
+.map-card.done .map-bar span { animation: none; width: 100%; transform: none; }
+
+/* El formulario se aparta al lanzar el informe */
+.container {
+  transition: opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease;
+}
+body.running .container {
+  opacity: 0.35;
+  transform: scale(0.97);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+@media (max-width: 720px) {
+  .map-layout { grid-template-columns: 1fr; }
+  .city-track { flex-direction: row; flex-wrap: wrap; max-height: none; }
+  .track-item { flex: 1 1 140px; }
+  .track-item .ti-sub { display: none; }
 }
 
 /* ------- Responsive ------- */

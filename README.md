@@ -35,7 +35,7 @@ Automatiza el proceso manual de consulta meteorológica que un analista agrícol
 
 ### Requisitos previos
 
-- **Python 3.10 o superior** ([descargar](https://www.python.org/downloads/))
+- **Python 3.10–3.12** ([descargar](https://www.python.org/downloads/)) — recomendado **3.12**. En Windows, evita 3.13/3.14: `pandas` aún no tiene *wheels* precompilados para esas versiones y la instalación intenta compilar y falla.
 - Conexión a internet (la API de Open-Meteo es pública y gratuita, sin API key)
 
 ### Pasos
@@ -78,6 +78,8 @@ Abre el navegador en **http://127.0.0.1:8000** y listo.
    - Contraseña — **si usas Gmail, necesitas una App Password**, no tu contraseña normal: [cómo generarla](https://support.google.com/accounts/answer/185833)
    - Destinatario
 4. Pulsa **Lanzar informe**.
+
+Mientras se genera el informe, el formulario se aparta y aparece una **visualización a pantalla completa**: un mapa de España donde la cámara recorre, una a una, todas las ciudades seleccionadas, con un panel de progreso (`en cola` → `consultando…` → `listo`) y un contador de ciudades procesadas.
 
 ### Qué hace el sistema en ese clic
 

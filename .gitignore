@@ -14,6 +14,8 @@ env/
 datos_raw/
 informes_generados/
 archivo_informes/
+server.log
+*.log
 
 # IDE / SO
 .vscode/

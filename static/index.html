@@ -108,21 +108,43 @@
     </section>
 
     <footer class="footer">
-      <span>Hibrusi · Proyecto Automatización · Nebrija</span>
+      <span>Bruno, Javier y David · Proyecto Automatización · Nebrija</span>
     </footer>
   </main>
 
-  <!-- Overlay de carga -->
+  <!-- Overlay de carga: mapa de España con cámara móvil -->
   <div id="overlay" class="overlay hidden">
-    <div class="overlay-inner">
-      <div class="sun">
-        <div class="sun-core"></div>
-        <div class="ray r1"></div>
-        <div class="ray r2"></div>
-        <div class="ray r3"></div>
-        <div class="ray r4"></div>
+    <div class="map-card" id="map-card">
+      <div class="map-topbar">
+        <div class="map-title">
+          <span class="map-dot"></span>
+          <span>Generando informe</span>
+        </div>
+        <div class="map-counter"><span id="map-count">0</span><span class="sep">/</span><span id="map-total">0</span> ciudades</div>
       </div>
-      <p class="overlay-text">Consultando Open-Meteo…</p>
+
+      <div class="map-layout">
+        <div class="map-stage">
+          <svg id="map-svg" viewBox="-9.4 -44.2 13.1 8.6" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+            <defs>
+              <linearGradient id="landGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#ffd29c" />
+                <stop offset="100%" stop-color="#ff9a3c" />
+              </linearGradient>
+            </defs>
+            <path id="spain-path" d="M-8.4,-43.4 L-7.9,-43.8 L-5.7,-43.6 L-3.8,-43.5 L-2.9,-43.4 L-1.8,-43.4 L-1.4,-43.1 L1.5,-42.5 L3.3,-42.4 L2.2,-41.4 L0.9,-40.7 L-0.3,-39.5 L0.2,-38.7 L-0.5,-38.3 L-1.0,-37.6 L-2.2,-36.8 L-4.4,-36.7 L-5.6,-36.0 L-6.3,-36.5 L-7.0,-37.2 L-7.4,-37.2 L-7.0,-38.0 L-7.3,-38.5 L-7.0,-39.1 L-7.0,-39.7 L-6.9,-40.3 L-6.8,-41.0 L-6.4,-41.4 L-7.2,-41.9 L-8.2,-42.1 L-8.8,-42.6 L-9.0,-43.0 Z" />
+            <g id="city-layer"></g>
+          </svg>
+        </div>
+
+        <ul class="city-track" id="city-track"></ul>
+      </div>
+
+      <div class="map-foot">
+        <span class="map-spinner"></span>
+        <span id="map-status">Iniciando…</span>
+      </div>
+      <div class="map-bar"><span></span></div>
     </div>
   </div>
 
