@@ -170,8 +170,9 @@ La función `classify_day(temp_max, rain)` en `weather_job.py` es una **función
 
 ## 👥 Autores
 
-- **Bruno** ([@hibrusi-dev](https://github.com/hibrusi-dev))
-- **SubJ22** ([@SubJ22](https://github.com/SubJ22))
+- **Bruno**
+- **Javier**
+- **David**
 
 Asignatura: **Automatización de Procesos**
 Profesor: Francisco
