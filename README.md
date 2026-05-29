@@ -64,6 +64,7 @@ python app.py
 ```
 
 Abre el navegador en **http://127.0.0.1:8000** y listo.
+Así de fácil.
 
 ---
 
